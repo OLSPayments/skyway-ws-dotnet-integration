@@ -3,7 +3,7 @@
 
 Requires .NET Core - https://dotnet.microsoft.com/download
 
-Remember to set proper URL and accessID and accessKey values  in appsettings.json
+Remember to set proper URL and accessID and accessKey values in appsettings.json
 
 Run in VSCode or command line:
 
@@ -11,21 +11,24 @@ Run in VSCode or command line:
 
 Example Output
 
-`t$ dotnet run`
-`Hello Skyway!`
+```
+$ dotnet run
 
-`Sending Request to: https://hostname.domain:<port>/fsd/J.01-A`
+Hello Skyway!
 
-`Request`
+Sending Request to: https://hostname.domain:<port>/fsd/J.01-A
+
+Request
 
 ********************************************
-`X-InComm-DateTime: 2019-08-21T19:52:05.930Z`
-`Content-Type: application/json; charset=UTF-8`
-`Accept: application/json; version=3`
-`Accept-Language: en`
-`Authorization: InComm *********************************************`
-`: { application_type = 0, platform = W, sigcap_model = V, register_version = 3062, message_version = 03, shift_number = 24456, merchant_number = 0001, store_number = 99999, register_number = 001, pos_capability = 6, country_code = USA, currency_code = USD, timezone_differential = -0600, encryption_indicator = 1, transaction_sequence_number = 2103, card_id_source = A, account_entry_mode = T, magnetic_strip_info = **********************, amount = 000000001234, additional_amount = 0, tender_attempt_indicator = 1, unique_id_scheme = S, sender_unique_id = 000000000000079454120278678665 }`
+X-InComm-DateTime: 2019-08-21T19:52:05.930Z
+Content-Type: application/json; charset=UTF-8
+Accept: application/json; version=3
+Accept-Language: en
+Authorization: InComm *********************************************
+: { application_type = 0, platform = W, sigcap_model = V, register_version = 3062, message_version = 03, shift_number = 24456, merchant_number = 0001, store_number = 99999, register_number = 001, pos_capability = 6, country_code = USA, currency_code = USD, timezone_differential = -0600, encryption_indicator = 1, transaction_sequence_number = 2103, card_id_source = A, account_entry_mode = T, magnetic_strip_info = **********************, amount = 000000001234, additional_amount = 0, tender_attempt_indicator = 1, unique_id_scheme = S, sender_unique_id = 000000000000079454120278678665 }
 
-`Response`
+Response
 ********************************************
-`{"store_number":"99999","register_number":"001","transaction_sequence_number":"2103","response_code":"NH","approval_code":"000000","capture_date":"000000","display_message":"INVALID LOCATION","response_status":{"irc":"2400","internal_description":"Invalid merchant - Merchant with merchant-number required not found"},"unique_id_scheme":"S","sender_unique_id":"000000000000079454120278678665"}`
+{"store_number":"99999","register_number":"001","transaction_sequence_number":"2103","response_code":"NH","approval_code":"000000","capture_date":"000000","display_message":"INVALID LOCATION","response_status":{"irc":"2400","internal_description":"Invalid merchant - Merchant with merchant-number required not found"},"unique_id_scheme":"S","sender_unique_id":"000000000000079454120278678665"}
+```
