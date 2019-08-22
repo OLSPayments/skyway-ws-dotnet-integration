@@ -63,22 +63,34 @@ namespace OLSPayments.Skyway
                 merchant_number = configuration["merchant_number"],
                 store_number = configuration["store_number"],
                 register_number = "001",
-                pos_capability = "6",
+                pos_capability = "0",
                 country_code = "USA",
                 currency_code = "USD",
                 timezone_differential = "-0600",
                 transaction_sequence_number = "2103",
                 card_id_source = "A",
                 account_entry_mode = "T",
-                encryption_indicator = "1",
-                magnetic_strip_info = "4111111111111111",
-                //encryption_indicator = "3",
-                //magnetic_strip_info = RSAEncrypt(@"publickey.pem", "4111111111111111"),
-                amount = "000000001234",
+                encryption_indicator = "3",
+                magnetic_strip_info = RSAEncrypt(@"publickey.pem", "4111111111111111=2801=777"),
+                flex_info = "PKI-KEY-ID=" + configuration["rsaKeyId"] + "|PARTIAL-AUTH=N",
+                ancillary_verification = new {
+                    csc_indicator = "1",
+                        account_holder = new {
+                            billing_postal_code = "45209",
+                            billing_address = "123 Main Street Cinc"
+                        },
+                },
+                e_commerce = new {
+                    e_commerce_indicator = "07",
+                        order = new {
+                            invoice_number = "00035423562"
+                        },
+                },
+                amount = "000000002550",
                 additional_amount = "0",
                 tender_attempt_indicator = "1",
                 unique_id_scheme = "S",
-                sender_unique_id = "000000000000079454120278678665"
+                sender_unique_id = "BAB82200006"
                 });
 
             Console.WriteLine();
