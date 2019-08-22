@@ -3,7 +3,8 @@
 
 Requires .NET Core - https://dotnet.microsoft.com/download
 
-Remember to set proper URL and accessID and accessKey values in appsettings.json
+Remember to set proper URL, accessID, accessKey, merchant_number and store_number values in appsettings.json. 
+Also populate the publickey.pem file with your public key.
 
 Run in VSCode or Terminal:
 

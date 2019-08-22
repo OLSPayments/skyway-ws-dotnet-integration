@@ -5,6 +5,9 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace OLSPayments.Skyway
 {
@@ -14,7 +17,7 @@ namespace OLSPayments.Skyway
         {
             Console.WriteLine("Hello Skyway!");
             Console.WriteLine();
-            
+ 
              var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -57,18 +60,20 @@ namespace OLSPayments.Skyway
                 register_version = "3062",
                 message_version = "03",
                 shift_number = "24456",
-                merchant_number = "0001",
-                store_number = "99999",
+                merchant_number = configuration["merchant_number"],
+                store_number = configuration["store_number"],
                 register_number = "001",
                 pos_capability = "6",
                 country_code = "USA",
                 currency_code = "USD",
                 timezone_differential = "-0600",
-                encryption_indicator = "1",
                 transaction_sequence_number = "2103",
                 card_id_source = "A",
                 account_entry_mode = "T",
+                encryption_indicator = "1",
                 magnetic_strip_info = "4111111111111111",
+                //encryption_indicator = "3",
+                //magnetic_strip_info = RSAEncrypt(@"publickey.pem", "4111111111111111"),
                 amount = "000000001234",
                 additional_amount = "0",
                 tender_attempt_indicator = "1",
@@ -96,10 +101,13 @@ namespace OLSPayments.Skyway
             var response = client.Post(request);
             var content = response.Content;
 
-            Console.WriteLine ("Response");
+            Console.WriteLine ("Response / " + "Status Code: " + (int)response.StatusCode);
             Console.WriteLine ("********************************************");
-            
+            if (((int)response.StatusCode)==200){
                 Console.WriteLine(PrettyFormatJson(content.ToString()));
+            } else {
+                Console.WriteLine(content);
+            }
         }
        private static byte[]  Encode(string input, byte[] key)
         {
@@ -113,5 +121,22 @@ namespace OLSPayments.Skyway
             return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
         }
 
+        private static AsymmetricKeyParameter ReadAsymmetricKeyParameter(string pemFilename)
+        {
+            var fileStream = System.IO.File.OpenText (pemFilename);
+            var pemReader = new Org.BouncyCastle.OpenSsl.PemReader (fileStream);
+            var KeyParameter = (AsymmetricKeyParameter)pemReader.ReadObject ();
+            return KeyParameter;
+        }
+
+        private static string RSAEncrypt(String publicKeyPemFile, String cleartext){
+            using (var rsa = RSA.Create())
+            {
+                AsymmetricKeyParameter k = ReadAsymmetricKeyParameter(publicKeyPemFile);
+                RSAParameters rsaParameters = DotNetUtilities.ToRSAParameters((RsaKeyParameters)k);
+                rsa.ImportParameters(rsaParameters);
+                return Convert.ToBase64String(rsa.Encrypt(Encoding.UTF8.GetBytes(cleartext), RSAEncryptionPadding.OaepSHA1));
+            }
+        }
     }
 }
