@@ -3,13 +3,12 @@ using RestSharp;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.FileExtensions;
 using System.IO;
+using Newtonsoft.Json;
 
-namespace Skyway_ws.NET
+namespace OLSPayments.Skyway
 {
-    class SkywayWSNetDemo
+    class SkywayWebServicesDemo
     {
         static void Main(string[] args)
         {
@@ -22,13 +21,15 @@ namespace Skyway_ws.NET
                 var configuration = builder.Build();
 
                 if (String.IsNullOrEmpty(configuration["skywayURL"])){
-                    Console.Error.WriteLine("Invalid skywayURL in appettings.json"); 
+                    Console.Error.WriteLine("Invalid skywayURL in appsettings.json"); 
                     Environment.Exit(-1);
                 }
 
             String uri = "/fsd/J.01-A";
-            String timestamp = "2019-08-21T19:52:05.930Z";
-            String contentType = "application/json; charset=UTF-8";
+
+            DateTime now =  DateTime.Now;
+            String timestamp = now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            String contentType = "application/json";
             String accepts = "application/json; version=3";
             String accessId = configuration["accessId"];
             String accessKey = configuration["accessKey"];
@@ -47,7 +48,7 @@ namespace Skyway_ws.NET
             request.AddHeader("Accept-Language", "en");
             request.AddHeader("Authorization", signature);
             
-            request.AddJsonBody(
+            request.AddJsonBody( //RestSharp's AddJsonBody() will Serialize this .NET Object into JSON
                 new 
                 {
                 application_type = "0", 
@@ -83,7 +84,12 @@ namespace Skyway_ws.NET
                 var sb = new StringBuilder();
                 foreach(var param in request.Parameters)
                 {
-                    sb.AppendFormat("{0}: {1}\r\n", param.Name, param.Value);
+                    if (String.IsNullOrEmpty((param.Name)))
+                    {
+                        sb.AppendFormat("{0}{1}\r\n", param.Name, PrettyFormatJson(JsonConvert.SerializeObject(param.Value))); //Convert and Pretty Print JSON Request Body
+                    } else {
+                        sb.AppendFormat("{0}: {1}\r\n", param.Name, param.Value);
+                    }
                 }
                 Console.WriteLine(sb.ToString());
                 
@@ -93,17 +99,19 @@ namespace Skyway_ws.NET
             Console.WriteLine ("Response");
             Console.WriteLine ("********************************************");
             
-                Console.WriteLine(content);
-
-                 
-
+                Console.WriteLine(PrettyFormatJson(content.ToString()));
         }
-       public static byte[]  Encode(string input, byte[] key)
+       private static byte[]  Encode(string input, byte[] key)
         {
             HMACSHA1 myhmacsha1 = new HMACSHA1(key);
             byte[] byteArray = Encoding.ASCII.GetBytes(input);
             return myhmacsha1.ComputeHash(byteArray);
         }
-    
+        private static string PrettyFormatJson(string json)
+        {
+            dynamic parsedJson = JsonConvert.DeserializeObject(json);
+            return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+        }
+
     }
 }
